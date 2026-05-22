@@ -1,0 +1,94 @@
+<div class="mx-auto max-w-2xl px-4 py-8 sm:px-6">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-slate-900">
+      {{ editId() ? 'Edit todo' : 'Create todo' }}
+    </h1>
+    <a [routerLink]="['/', appRoute.Dashboard]" class="text-sm text-slate-600 hover:text-slate-900">
+      &larr; Back
+    </a>
+  </div>
+
+  @if (loading()) {
+    <app-loading-spinner label="Loading todo…"></app-loading-spinner>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" class="card mt-6 p-6" novalidate>
+      <app-error-message [message]="errorMessage()"></app-error-message>
+
+      <div class="space-y-4 mt-2">
+        <div>
+          <label for="title" class="label">Title</label>
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            class="input"
+            placeholder="What needs to get done?"
+            [class.border-rose-400]="isInvalid('title')"
+          />
+          @if (isInvalid('title')) {
+            <p class="mt-1 text-xs text-rose-600">Title is required (max 200 characters).</p>
+          }
+        </div>
+
+        <div>
+          <label for="description" class="label">Description (optional)</label>
+          <textarea
+            id="description"
+            rows="4"
+            formControlName="description"
+            class="textarea"
+            placeholder="Add any extra details…"
+            [class.border-rose-400]="isInvalid('description')"
+          ></textarea>
+          @if (isInvalid('description')) {
+            <p class="mt-1 text-xs text-rose-600">Description is too long (max 2000 characters).</p>
+          }
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label for="status" class="label">Status</label>
+            <select id="status" formControlName="status" class="select">
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ statusLabels[status] }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label for="priority" class="label">Priority</label>
+            <select id="priority" formControlName="priority" class="select">
+              @for (priority of priorityOptions; track priority) {
+                <option [value]="priority">{{ priorityLabels[priority] }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label for="dueDate" class="label">Due date</label>
+            <input
+              id="dueDate"
+              type="date"
+              formControlName="dueDate"
+              class="input"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-2">
+        <a [routerLink]="['/', appRoute.Dashboard]" class="btn-secondary">
+          Cancel
+        </a>
+        <button type="submit" class="btn-primary" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
+            Saving&hellip;
+          } @else {
+            {{ editId() ? 'Save changes' : 'Create todo' }}
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>

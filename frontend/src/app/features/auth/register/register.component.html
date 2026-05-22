@@ -1,0 +1,84 @@
+<div class="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12">
+  <div class="card w-full max-w-md p-6 sm:p-8">
+    <div class="flex flex-col items-center gap-2 text-center">
+      <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M10 9a3 3 0 100-6 3 3 0 000 6zM5 17a5 5 0 1110 0H5z" />
+        </svg>
+      </span>
+      <h1 class="text-2xl font-semibold text-slate-900">Create an account</h1>
+      <p class="text-sm text-slate-500">Start organising your tasks in seconds.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="mt-6 space-y-4" novalidate>
+      <app-error-message [message]="errorMessage()"></app-error-message>
+
+      <div>
+        <label for="name" class="label">Full name</label>
+        <input
+          id="name"
+          type="text"
+          autocomplete="name"
+          formControlName="name"
+          class="input"
+          [class.border-rose-400]="isInvalid('name')"
+        />
+        @if (isInvalid('name')) {
+          <p class="mt-1 text-xs text-rose-600">Name must be at least 2 characters.</p>
+        }
+      </div>
+
+      <div>
+        <label for="email" class="label">Email</label>
+        <input
+          id="email"
+          type="email"
+          autocomplete="email"
+          formControlName="email"
+          class="input"
+          [class.border-rose-400]="isInvalid('email')"
+        />
+        @if (isInvalid('email')) {
+          <p class="mt-1 text-xs text-rose-600">Please enter a valid email address.</p>
+        }
+      </div>
+
+      <div>
+        <label for="password" class="label">Password</label>
+        <input
+          id="password"
+          type="password"
+          autocomplete="new-password"
+          formControlName="password"
+          class="input"
+          [class.border-rose-400]="isInvalid('password')"
+        />
+        @if (isInvalid('password')) {
+          <p class="mt-1 text-xs text-rose-600">
+            At least 8 characters, including a letter and a number.
+          </p>
+        } @else {
+          <p class="mt-1 text-xs text-slate-500">
+            At least 8 characters with a mix of letters and numbers.
+          </p>
+        }
+      </div>
+
+      <button type="submit" class="btn-primary w-full" [disabled]="submitting()">
+        @if (submitting()) {
+          <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"></span>
+          Creating your account&hellip;
+        } @else {
+          Create account
+        }
+      </button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-slate-500">
+      Already have an account?
+      <a [routerLink]="['/', appRoute.Login]" class="font-medium text-brand-600 hover:text-brand-700">
+        Sign in
+      </a>
+    </p>
+  </div>
+</div>

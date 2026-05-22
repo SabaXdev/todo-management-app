@@ -1,0 +1,147 @@
+<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+  <!-- Header -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold text-slate-900">My todos</h1>
+      <p class="text-sm text-slate-500">
+        {{ total() }} task{{ total() === 1 ? '' : 's' }} total
+      </p>
+    </div>
+    <a [routerLink]="['/', appRoute.Todos, appRoute.TodoNew]" class="btn-primary self-start">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10 5a.75.75 0 01.75.75v3.5h3.5a.75.75 0 010 1.5h-3.5v3.5a.75.75 0 01-1.5 0v-3.5h-3.5a.75.75 0 010-1.5h3.5v-3.5A.75.75 0 0110 5z" clip-rule="evenodd" />
+      </svg>
+      New todo
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <form [formGroup]="filterForm" class="card mt-6 p-4 sm:p-5">
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+      <div class="md:col-span-5">
+        <label for="search" class="label">Search</label>
+        <input
+          id="search"
+          type="search"
+          formControlName="search"
+          placeholder="Search by title…"
+          class="input"
+        />
+      </div>
+
+      <div class="md:col-span-3">
+        <label for="status" class="label">Status</label>
+        <select id="status" formControlName="status" class="select">
+          <option value="">All statuses</option>
+          @for (status of statusOptions; track status) {
+            <option [value]="status">{{ statusLabels[status] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label for="priority" class="label">Priority</label>
+        <select id="priority" formControlName="priority" class="select">
+          <option value="">All</option>
+          @for (priority of priorityOptions; track priority) {
+            <option [value]="priority">{{ priorityLabels[priority] }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="md:col-span-2">
+        <label for="sortBy" class="label">Sort by</label>
+        <div class="flex gap-2">
+          <select id="sortBy" formControlName="sortBy" class="select">
+            @for (sort of sortByOptions; track sort) {
+              <option [value]="sort">{{ sortByLabels[sort] }}</option>
+            }
+          </select>
+          <select formControlName="sortOrder" class="select w-24" aria-label="Sort order">
+            <option [value]="sortOrder.DESC">Desc</option>
+            <option [value]="sortOrder.ASC">Asc</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <!-- Error -->
+  @if (errorMessage(); as msg) {
+    <div class="mt-4">
+      <app-error-message [message]="msg"></app-error-message>
+    </div>
+  }
+
+  <!-- Body -->
+  <div class="mt-6">
+    @if (loading()) {
+      <app-loading-spinner label="Loading your todos…"></app-loading-spinner>
+    } @else if (todos().length === 0) {
+      <app-empty-state
+        title="No todos to show"
+        description="Try adjusting your filters or create your first todo to get started."
+      >
+        <a [routerLink]="['/', appRoute.Todos, appRoute.TodoNew]" class="btn-primary mt-4">
+          Create a todo
+        </a>
+      </app-empty-state>
+    } @else {
+      <ul class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        @for (todo of todos(); track trackById($index, todo)) {
+          <li class="card flex flex-col p-4">
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="text-base font-semibold text-slate-900">
+                {{ todo.title }}
+              </h3>
+              <div class="flex gap-1.5">
+                <app-status-badge [status]="todo.status"></app-status-badge>
+                <app-priority-badge [priority]="todo.priority"></app-priority-badge>
+              </div>
+            </div>
+
+            @if (todo.description) {
+              <p class="mt-2 line-clamp-3 text-sm text-slate-600">
+                {{ todo.description }}
+              </p>
+            }
+
+            <dl class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+              @if (todo.dueDate) {
+                <div>
+                  <dt class="inline font-medium text-slate-600">Due:</dt>
+                  <dd class="inline">{{ todo.dueDate | date: 'mediumDate' }}</dd>
+                </div>
+              }
+              <div>
+                <dt class="inline font-medium text-slate-600">Created:</dt>
+                <dd class="inline">{{ todo.createdAt | date: 'mediumDate' }}</dd>
+              </div>
+            </dl>
+
+            <div class="mt-4 flex items-center justify-end gap-2">
+              <button type="button" class="btn-secondary" (click)="edit(todo)">
+                Edit
+              </button>
+              <button type="button" class="btn-danger" (click)="askDelete(todo)">
+                Delete
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <!-- Delete confirmation -->
+  @if (todoToDelete(); as todo) {
+    <app-confirm-dialog
+      title="Delete todo?"
+      [message]="'This will permanently remove “' + todo.title + '”. This action cannot be undone.'"
+      confirmLabel="Delete"
+      [dangerous]="true"
+      (confirm)="confirmDelete()"
+      (cancel)="cancelDelete()"
+    ></app-confirm-dialog>
+  }
+</div>
