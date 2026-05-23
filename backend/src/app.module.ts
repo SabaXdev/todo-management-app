@@ -33,6 +33,9 @@ import { UsersModule } from './users/users.module';
         database: configService.get<string>(ConfigKey.DATABASE_NAME, {
           infer: true,
         }),
+        ...(configService.get<boolean>(ConfigKey.DATABASE_SSL, { infer: true })
+          ? { ssl: { rejectUnauthorized: false } }
+          : {}),
         entities: [User, Todo],
         synchronize: configService.get<boolean>(ConfigKey.DATABASE_SYNC, {
           infer: true,

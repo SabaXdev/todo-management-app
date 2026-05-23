@@ -11,6 +11,7 @@ export const loadConfiguration = () => ({
   [ConfigKey.DATABASE_PASSWORD]: process.env.DATABASE_PASSWORD ?? 'postgres',
   [ConfigKey.DATABASE_NAME]: process.env.DATABASE_NAME ?? 'todo_management',
   [ConfigKey.DATABASE_SYNC]: process.env.DATABASE_SYNC === 'true',
+  [ConfigKey.DATABASE_SSL]: process.env.DATABASE_SSL === 'true',
 
   [ConfigKey.JWT_SECRET]: process.env.JWT_SECRET ?? 'change-me-in-env',
   [ConfigKey.JWT_EXPIRES_IN]: process.env.JWT_EXPIRES_IN ?? '1d',
